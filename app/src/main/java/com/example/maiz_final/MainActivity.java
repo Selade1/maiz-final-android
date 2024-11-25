@@ -1,5 +1,6 @@
 package com.example.maiz_final;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
@@ -50,8 +51,11 @@ public class MainActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             // Inicio de sesión exitoso
                             Toast.makeText(MainActivity.this, "Inicio de sesión exitoso", Toast.LENGTH_SHORT).show();
-                            // Puedes redirigir a otra actividad aquí
-                        } else {
+
+                            // Redirigir a la actividad Menu
+                            Intent intent = new Intent(MainActivity.this, menu.class);
+                            startActivity(intent);
+                            finish(); // Finaliza la actividad actual para evitar regresar al login} else {
                             // Error en el inicio de sesión
                             Toast.makeText(MainActivity.this, "Error: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                         }
