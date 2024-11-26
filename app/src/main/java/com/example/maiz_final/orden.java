@@ -71,7 +71,7 @@ public class orden extends AppCompatActivity {
 
     private void configurarSpinnerTipoEntrega() {
         Spinner spinnerTipoEntrega = findViewById(R.id.spinnerTipoEntrega);
-        String[] opciones = {"Flete", "En sitio", "Minorista"};
+        String[] opciones = {"Selecciona tipo de pedido", "Flete", "En sitio", "Minorista"};
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, opciones);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerTipoEntrega.setAdapter(adapter);
@@ -80,10 +80,17 @@ public class orden extends AppCompatActivity {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 tipoEntregaSeleccionado = opciones[position];
-                Toast.makeText(orden.this, "Tipo de entrega: " + tipoEntregaSeleccionado, Toast.LENGTH_SHORT).show();
-                // Actualizar el adaptador con el tipo de entrega seleccionado
-                catalogoAdapter = new CatalogoAdapter(productosList, tipoEntregaSeleccionado);
-                recyclerViewCatalogo.setAdapter(catalogoAdapter);
+
+                if (tipoEntregaSeleccionado.equals("Minorista")) {
+                    // Si el tipo de pedido es "Minorista", forzar el cliente a "Mostrador"
+                    Spinner spinnerClientes = findViewById(R.id.spinnerClientes);
+                    int posicionMostrador = clientesList.indexOf("Mostrador");
+                    if (posicionMostrador != -1) {
+                        spinnerClientes.setSelection(posicionMostrador);
+                        clienteSeleccionado = "Mostrador";
+                        Toast.makeText(orden.this, "Cliente configurado automáticamente a 'Mostrador'", Toast.LENGTH_SHORT).show();
+                    }
+                }
             }
 
             @Override
@@ -91,18 +98,21 @@ public class orden extends AppCompatActivity {
                 tipoEntregaSeleccionado = null;
             }
         });
+
+        // Seleccionar el valor por defecto
+        spinnerTipoEntrega.setSelection(0);
     }
+
+
 
     private void configurarSpinnerClientes() {
         Spinner spinnerClientes = findViewById(R.id.spinnerClientes);
         clientesList = new ArrayList<>();
+        clientesList.add("Selecciona un cliente");
 
-        // Cargar clientes desde Firestore
         db.collection("clientes").get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
-                    clientesList.clear();
-                    clientesList.add("Mostrador"); // Agregar opción extra
-
+                    clientesList.add("Mostrador"); // Opción adicional
                     for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
                         String cliente = document.getString("nombre");
                         if (cliente != null && !cliente.isEmpty()) {
@@ -110,7 +120,6 @@ public class orden extends AppCompatActivity {
                         }
                     }
 
-                    // Configurar el Spinner con los clientes
                     ArrayAdapter<String> adapter = new ArrayAdapter<>(orden.this, android.R.layout.simple_spinner_item, clientesList);
                     adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                     spinnerClientes.setAdapter(adapter);
@@ -123,7 +132,13 @@ public class orden extends AppCompatActivity {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 clienteSeleccionado = clientesList.get(position);
-                Toast.makeText(orden.this, "Cliente seleccionado: " + clienteSeleccionado, Toast.LENGTH_SHORT).show();
+
+                if (tipoEntregaSeleccionado != null && tipoEntregaSeleccionado.equals("Minorista") && !clienteSeleccionado.equals("Mostrador")) {
+                    // Si el tipo de pedido es "Minorista", forzar cliente a "Mostrador"
+                    spinnerClientes.setSelection(clientesList.indexOf("Mostrador"));
+                    clienteSeleccionado = "Mostrador";
+                    Toast.makeText(orden.this, "Cliente debe ser 'Mostrador' para pedidos 'Minoristas'", Toast.LENGTH_SHORT).show();
+                }
             }
 
             @Override
@@ -131,7 +146,12 @@ public class orden extends AppCompatActivity {
                 clienteSeleccionado = null;
             }
         });
+
+        // Seleccionar el valor por defecto
+        spinnerClientes.setSelection(0);
     }
+
+
 
     private void cargarCatalogo() {
         db.collection("catalogo").get()
@@ -154,14 +174,18 @@ public class orden extends AppCompatActivity {
     }
 
     private void realizarPedido() {
-        if (tipoEntregaSeleccionado.equals("Flete")) {
-            Toast.makeText(this, "No se pueden generar pedidos para tipo 'Flete'", Toast.LENGTH_SHORT).show();
+        if (clienteSeleccionado == null || clienteSeleccionado.equals("Selecciona un cliente")) {
+            Toast.makeText(this, "Selecciona un cliente.", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        // Verificar si el carrito está vacío
-        if (catalogoAdapter.getCarrito().isEmpty()) {
-            Toast.makeText(this, "El carrito está vacío. Agrega productos al pedido.", Toast.LENGTH_SHORT).show();
+        if (tipoEntregaSeleccionado == null || tipoEntregaSeleccionado.equals("Selecciona tipo de pedido")) {
+            Toast.makeText(this, "Selecciona un tipo de pedido.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (tipoEntregaSeleccionado.equals("Minorista") && !clienteSeleccionado.equals("Mostrador")) {
+            Toast.makeText(this, "El cliente debe ser 'Mostrador' para pedidos 'Minoristas'.", Toast.LENGTH_SHORT).show();
             return;
         }
 

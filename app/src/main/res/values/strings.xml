@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">maiz-final</string>
+    <string name="prompt_tipo_pedido">Selecciona tipo de pedido</string>
+    <string name="prompt_cliente">Selecciona un cliente</string>
 </resources>
