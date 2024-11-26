@@ -24,6 +24,16 @@ public class menu extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        // Referenciar el botón "Realizar orden"
+        Button btnOrder = findViewById(R.id.btnOrder);
+
+        // Configurar el clic en el botón
+        btnOrder.setOnClickListener(view -> {
+            // Redirigir a activity_orden.xml
+            Intent intent = new Intent(menu.this, orden.class);
+            startActivity(intent);
+        });
+
         // Referenciar el botón "Registro de clientes"
         Button btnRegisterClients = findViewById(R.id.btnRegisterClients);
 
