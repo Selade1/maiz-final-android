@@ -3,7 +3,7 @@ package com.example.maiz_final;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -49,7 +49,7 @@ public class CatalogoAdapter extends RecyclerView.Adapter<CatalogoAdapter.Catalo
 
     class CatalogoViewHolder extends RecyclerView.ViewHolder {
         private TextView tvNombreProducto, tvPrecioProducto, tvStockProducto, tvCantidadProducto;
-        private Button btnAdd, btnRemove;
+        private ImageButton btnAdd, btnRemove; // Cambiar Button por ImageButton
 
         public CatalogoViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -57,12 +57,12 @@ public class CatalogoAdapter extends RecyclerView.Adapter<CatalogoAdapter.Catalo
             tvPrecioProducto = itemView.findViewById(R.id.tvPrecioProducto);
             tvStockProducto = itemView.findViewById(R.id.tvStockProducto);
             tvCantidadProducto = itemView.findViewById(R.id.tvCantidadProducto);
-            btnAdd = itemView.findViewById(R.id.btnAdd);
-            btnRemove = itemView.findViewById(R.id.btnRemove);
+            btnAdd = itemView.findViewById(R.id.btnAdd); // Cambiado a ImageButton
+            btnRemove = itemView.findViewById(R.id.btnRemove); // Cambiado a ImageButton
         }
 
         public void bind(Producto producto) {
-            // Usar el método correcto de la clase Producto
+            // Configurar los datos del producto en los TextView
             tvNombreProducto.setText(producto.getNombre());
             tvPrecioProducto.setText("Precio: $" + producto.getPrecio());
             tvStockProducto.setText("Stock: " + producto.getStock());
@@ -70,6 +70,7 @@ public class CatalogoAdapter extends RecyclerView.Adapter<CatalogoAdapter.Catalo
             final int[] cantidad = {carrito.getOrDefault(producto, 0)};
             tvCantidadProducto.setText(String.valueOf(cantidad[0]));
 
+            // Configurar acciones de los botones
             btnAdd.setOnClickListener(v -> {
                 int limite = getLimiteCantidad();
                 if (cantidad[0] < producto.getStock() && (limite == -1 || carrito.values().stream().mapToInt(Integer::intValue).sum() < limite)) {

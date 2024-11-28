@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "585244696486",
+    "project_id": "maiz-db",
+    "storage_bucket": "maiz-db.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:585244696486:android:0f7110733266e371d9b967",
+        "android_client_info": {
+          "package_name": "Maiz.Android"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBmx0CDCAeCtDY8LmgxTuKBKZhtcpC7kmw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:585244696486:android:c0af110bb7b30981d9b967",
+        "android_client_info": {
+          "package_name": "com.example.maiz_final"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBmx0CDCAeCtDY8LmgxTuKBKZhtcpC7kmw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

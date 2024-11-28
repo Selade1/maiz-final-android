@@ -1,20 +1,22 @@
 package com.example.maiz_final;
 
-public class Producto {
+import android.os.Parcel;
+import android.os.Parcelable;
+
+public class Producto implements Parcelable {
     private String nombre;
     private int precio;
     private int stock;
 
-    // Constructor
     public Producto(String nombre, int precio, int stock) {
         this.nombre = nombre;
         this.precio = precio;
         this.stock = stock;
     }
 
-    // Métodos getter
+    // Getters
     public String getNombre() {
-        return nombre; // Método correcto para obtener el nombre del producto
+        return nombre;
     }
 
     public int getPrecio() {
@@ -25,16 +27,39 @@ public class Producto {
         return stock;
     }
 
-    // Métodos setter
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
-
-    public void setPrecio(int precio) {
-        this.precio = precio;
-    }
-
+    // Setters
     public void setStock(int stock) {
         this.stock = stock;
     }
+
+    // Parcelable implementation
+    protected Producto(Parcel in) {
+        nombre = in.readString();
+        precio = in.readInt();
+        stock = in.readInt();
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(nombre);
+        dest.writeInt(precio);
+        dest.writeInt(stock);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    public static final Creator<Producto> CREATOR = new Creator<Producto>() {
+        @Override
+        public Producto createFromParcel(Parcel in) {
+            return new Producto(in);
+        }
+
+        @Override
+        public Producto[] newArray(int size) {
+            return new Producto[size];
+        }
+    };
 }

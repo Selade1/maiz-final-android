@@ -13,10 +13,13 @@
         android:theme="@style/Theme.Maizfinal"
         tools:targetApi="31">
         <activity
-            android:name=".CalendarioCamionActivity"
+            android:name=".ConfirmacionPedidoActivity"
             android:exported="false" />
         <activity
-            android:name=".SeleccionarCamionActivity"
+            android:name=".SeleccionarFechaActivity"
+            android:exported="false" />
+        <activity
+            android:name=".SeleccionarVehiculoActivity"
             android:exported="false" />
         <activity
             android:name=".recibos"

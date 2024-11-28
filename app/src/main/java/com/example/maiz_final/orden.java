@@ -189,6 +189,18 @@ public class orden extends AppCompatActivity {
             return;
         }
 
+        // Verificar si el tipo de entrega es "Flete"
+        if (tipoEntregaSeleccionado.equals("Flete")) {
+            // Redirigir al flujo de selección de camión y fecha
+            Intent intent = new Intent(orden.this, SeleccionarVehiculoActivity.class);
+            intent.putExtra("productos", new ArrayList<>(catalogoAdapter.getCarrito().keySet())); // Productos seleccionados
+            intent.putExtra("cantidades", new ArrayList<>(catalogoAdapter.getCarrito().values())); // Cantidades seleccionadas
+            intent.putExtra("cliente", clienteSeleccionado); // Cliente seleccionado
+            startActivity(intent);
+            return;
+        }
+
+        // Si no es "Flete", continuar con el registro normal del pedido
         db.collection("pedidos")
                 .get()
                 .addOnSuccessListener(querySnapshot -> {
@@ -210,7 +222,7 @@ public class orden extends AppCompatActivity {
 
                         // Crear un mapa con los datos del producto
                         Map<String, Object> productoMap = new HashMap<>();
-                        productoMap.put("nombre", producto.getNombre()); // Línea que agrega el nombre
+                        productoMap.put("nombre", producto.getNombre());
                         productoMap.put("cantidad", cantidad);
                         productoMap.put("precio", producto.getPrecio());
                         productosPedido.add(productoMap);
@@ -254,6 +266,7 @@ public class orden extends AppCompatActivity {
                     Toast.makeText(this, "Error al acceder a la base de datos", Toast.LENGTH_SHORT).show();
                 });
     }
+
 
 
     @Override

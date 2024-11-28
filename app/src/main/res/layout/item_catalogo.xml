@@ -11,7 +11,7 @@
         android:id="@+id/tvNombreProducto"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Nombre del producto"
+        android:text="@string/default_product_name"
         android:textSize="16sp"
         android:textColor="@android:color/black"
         app:layout_constraintTop_toTopOf="parent"
@@ -24,7 +24,7 @@
         android:id="@+id/tvPrecioProducto"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Precio: $0.00"
+        android:text="@string/default_price"
         android:textSize="14sp"
         android:textColor="@android:color/black"
         app:layout_constraintTop_toBottomOf="@id/tvNombreProducto"
@@ -36,7 +36,7 @@
         android:id="@+id/tvStockProducto"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Stock: 0"
+        android:text="@string/default_stock"
         android:textSize="14sp"
         android:textColor="@android:color/black"
         app:layout_constraintTop_toBottomOf="@id/tvPrecioProducto"
@@ -56,38 +56,36 @@
         android:layout_marginTop="8dp">
 
         <!-- Botón para decrementar -->
-        <Button
+        <ImageButton
             android:id="@+id/btnRemove"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:background="@drawable/rounded_button_background"
-            android:text="-"
-            android:textColor="@android:color/white"
-            android:textSize="16sp"
-            android:elevation="4dp"
-            android:layout_marginEnd="4dp" />
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@drawable/ic_remove"
+            android:background="?attr/selectableItemBackground"
+            android:contentDescription="@string/remove_button"
+            app:tint="@color/orange" />
 
         <!-- Cantidad -->
         <TextView
             android:id="@+id/tvCantidadProducto"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
             android:gravity="center"
-            android:text="0"
+            android:text="@string/default_quantity"
             android:textSize="16sp"
             android:background="@drawable/rounded_background"
             android:textColor="@android:color/white"
             android:layout_marginEnd="4dp" />
 
         <!-- Botón para incrementar -->
-        <Button
+        <ImageButton
             android:id="@+id/btnAdd"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:background="@drawable/rounded_button_background"
-            android:text="+"
-            android:textColor="@android:color/white"
-            android:textSize="16sp"
-            android:elevation="4dp" />
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@drawable/ic_add"
+            android:background="?attr/selectableItemBackground"
+            android:contentDescription="@string/add_button"
+            app:tint="@color/orange" />
+
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

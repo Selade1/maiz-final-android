@@ -1,16 +1,17 @@
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:state_pressed="true">
-        <shape android:shape="oval">
-            <solid android:color="#E6953D" />
+        <shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="oval">
+            <solid android:color="#FFA451" />
             <size android:width="48dp" android:height="48dp" />
             <corners android:radius="24dp" />
         </shape>
+
     </item>
     <item>
         <shape android:shape="oval">
             <solid android:color="#FFA451" />
-            <size android:width="48dp" android:height="48dp" />
-            <corners android:radius="24dp" />
+            <size android:width="40dp" android:height="40dp" />
+            <corners android:radius="20dp" />
         </shape>
     </item>
 </selector>
