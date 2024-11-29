@@ -191,55 +191,26 @@ public class orden extends AppCompatActivity {
 
         // Verificar si el tipo de entrega es "Flete"
         if (tipoEntregaSeleccionado.equals("Flete")) {
+            // Redirigir a SeleccionarVehiculoActivity
             Intent intent = new Intent(orden.this, SeleccionarVehiculoActivity.class);
-            intent.putExtra("productos", new ArrayList<>(catalogoAdapter.getCarrito().keySet()));
-            intent.putExtra("cantidades", new ArrayList<>(catalogoAdapter.getCarrito().values()));
-            intent.putExtra("cliente", clienteSeleccionado);
+            intent.putExtra("productos", new ArrayList<>(catalogoAdapter.getCarrito().keySet())); // Productos seleccionados
+            intent.putExtra("cantidades", new ArrayList<>(catalogoAdapter.getCarrito().values())); // Cantidades seleccionadas
+            intent.putExtra("cliente", clienteSeleccionado); // Cliente seleccionado
+            intent.putExtra("tipoEntrega", tipoEntregaSeleccionado); // Tipo de entrega
             startActivity(intent);
             return;
         }
 
-        // Si no es "Flete", registrar un pedido normal
-        db.collection("pedidos")
-                .get()
-                .addOnSuccessListener(pedidosSnapshot -> {
-                    int nextId = pedidosSnapshot.size() + 1;
-                    String formattedId = nextId + "_ped"; // Formato del ID
-
-                    Map<String, Object> pedido = new HashMap<>();
-                    pedido.put("id", formattedId);
-                    pedido.put("nombreCliente", clienteSeleccionado);
-                    pedido.put("tipoEntrega", tipoEntregaSeleccionado);
-
-                    List<Map<String, Object>> productosPedido = new ArrayList<>();
-                    for (Producto producto : catalogoAdapter.getCarrito().keySet()) {
-                        int cantidad = catalogoAdapter.getCarrito().get(producto);
-                        Map<String, Object> productoMap = new HashMap<>();
-                        productoMap.put("nombre", producto.getNombre());
-                        productoMap.put("cantidad", cantidad);
-                        productoMap.put("precio", producto.getPrecio());
-                        productosPedido.add(productoMap);
-                    }
-                    pedido.put("productos", productosPedido);
-
-                    db.collection("pedidos").document(formattedId).set(pedido)
-                            .addOnSuccessListener(aVoid -> {
-                                Toast.makeText(this, "Pedido registrado con éxito.", Toast.LENGTH_SHORT).show();
-
-                                // Redirigir a pantalla de confirmación
-                                Intent intent = new Intent(orden.this, ConfirmacionPedidoActivity.class);
-                                intent.putExtra("idPedido", formattedId);
-                                startActivity(intent);
-                                finish();
-                            })
-                            .addOnFailureListener(e -> {
-                                Toast.makeText(this, "Error al registrar el pedido.", Toast.LENGTH_SHORT).show();
-                            });
-                })
-                .addOnFailureListener(e -> {
-                    Toast.makeText(this, "Error al acceder a la base de datos.", Toast.LENGTH_SHORT).show();
-                });
+        // Si no es "Flete", redirigir a SeleccionarFechaActivity
+        Intent intent = new Intent(orden.this, SeleccionarFechaActivity.class);
+        intent.putExtra("productos", new ArrayList<>(catalogoAdapter.getCarrito().keySet())); // Productos seleccionados
+        intent.putExtra("cantidades", new ArrayList<>(catalogoAdapter.getCarrito().values())); // Cantidades seleccionadas
+        intent.putExtra("cliente", clienteSeleccionado); // Cliente seleccionado
+        intent.putExtra("tipoEntrega", tipoEntregaSeleccionado); // Tipo de entrega
+        startActivity(intent);
     }
+
+
 
 
 

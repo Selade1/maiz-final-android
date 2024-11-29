@@ -12,10 +12,9 @@ import java.util.ArrayList;
 
 public class VehiculosAdapter extends RecyclerView.Adapter<VehiculosAdapter.VehiculoViewHolder> {
 
-    private ArrayList<String> listaVehiculos; // Lista de vehículos
-    private OnVehiculoClickListener listener; // Interfaz para manejar clics en un vehículo
+    private ArrayList<String> listaVehiculos;
+    private OnVehiculoClickListener listener;
 
-    // Interfaz para manejar clics
     public interface OnVehiculoClickListener {
         void onVehiculoClick(String vehiculo);
     }
@@ -28,18 +27,15 @@ public class VehiculosAdapter extends RecyclerView.Adapter<VehiculosAdapter.Vehi
     @NonNull
     @Override
     public VehiculoViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        // Inflar el diseño de cada elemento (item_vehiculo.xml)
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_vehiculo, parent, false);
         return new VehiculoViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull VehiculoViewHolder holder, int position) {
-        // Obtener el vehículo en la posición actual
         String vehiculo = listaVehiculos.get(position);
         holder.tvVehiculo.setText(vehiculo);
 
-        // Manejar el clic en el elemento
         holder.itemView.setOnClickListener(v -> listener.onVehiculoClick(vehiculo));
     }
 
@@ -48,13 +44,12 @@ public class VehiculosAdapter extends RecyclerView.Adapter<VehiculosAdapter.Vehi
         return listaVehiculos.size();
     }
 
-    // Clase interna para manejar la vista de cada elemento
     class VehiculoViewHolder extends RecyclerView.ViewHolder {
         TextView tvVehiculo;
 
         public VehiculoViewHolder(@NonNull View itemView) {
             super(itemView);
-            tvVehiculo = itemView.findViewById(R.id.tvVehiculo); // TextView definido en item_vehiculo.xml
+            tvVehiculo = itemView.findViewById(R.id.tvVehiculo);
         }
     }
 }
