@@ -11,9 +11,9 @@ public class OrdenPendiente {
     private final ArrayList<Map<String, Object>> productos;
     private final String idCamion; // Sólo para envíos
     private final String fecha; // Sólo para envíos
-    private final String direccion; // Dirección del cliente
-    private final String telefono; // Teléfono del cliente
-    private final String correo; // Correo del cliente
+    private String direccion; // Dirección del cliente
+    private String telefono; // Teléfono del cliente
+    private String correo; // Correo del cliente
 
     public OrdenPendiente(String id, String cliente, String tipo, String tipoEntrega,
                           ArrayList<Map<String, Object>> productos, String idCamion, String fecha,
@@ -69,4 +69,17 @@ public class OrdenPendiente {
     public String getCorreo() {
         return correo;
     }
+
+    public void setDireccion(String direccion) {
+        this.direccion = direccion;
+    }
+
+    public void setTelefono(String telefono) {
+        this.telefono = telefono;
+    }
+
+    public void setCorreo(String correo) {
+        this.correo = correo;
+    }
+
 }

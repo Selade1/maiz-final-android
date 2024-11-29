@@ -31,7 +31,8 @@ public class OrdenesPendientesAdapter extends RecyclerView.Adapter<OrdenesPendie
     public void onBindViewHolder(@NonNull OrdenPendienteViewHolder holder, int position) {
         OrdenPendiente orden = ordenesPendientes.get(position);
 
-        holder.tvOrden.setText(orden.getTipo() + ": " + orden.getCliente());
+        // Mostrar tipo y cliente junto con el ID
+        holder.tvOrden.setText(orden.getTipo() + ": " + orden.getCliente() + " (" + orden.getId() + ")");
 
         holder.itemView.setOnClickListener(v -> {
             if (holder.detalleLayout.getVisibility() == View.VISIBLE) {
@@ -67,6 +68,9 @@ public class OrdenesPendientesAdapter extends RecyclerView.Adapter<OrdenesPendie
             }
         });
     }
+
+
+
 
     @Override
     public int getItemCount() {

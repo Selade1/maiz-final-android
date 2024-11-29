@@ -65,66 +65,48 @@ public class SeleccionarFechaActivity extends AppCompatActivity {
     }
 
     private void registrarPedido(String vehiculo, ArrayList<Producto> productos, ArrayList<Integer> cantidades, String cliente, String fecha) {
-        // Verificar pedidos existentes para este vehículo en la fecha seleccionada
         db.collection("envios")
-                .whereEqualTo("idCamion", vehiculo)
-                .whereEqualTo("fecha", fecha)
                 .get()
-                .addOnSuccessListener(queryDocumentSnapshots -> {
-                    if (queryDocumentSnapshots.size() >= 2) {
-                        Toast.makeText(this, "El vehículo ya tiene 2 pedidos para esta fecha.", Toast.LENGTH_SHORT).show();
-                    } else {
-                        // Obtener el último ID para calcular el siguiente ID de manera segura
-                        db.collection("envios")
-                                .orderBy("idPedido", com.google.firebase.firestore.Query.Direction.DESCENDING)
-                                .limit(1)
-                                .get()
-                                .addOnSuccessListener(snapshot -> {
-                                    int nextId = 1; // Por defecto, el primer ID es 1
-                                    if (!snapshot.isEmpty()) {
-                                        nextId = snapshot.getDocuments().get(0).getLong("idPedido").intValue() + 1;
-                                    }
+                .addOnSuccessListener(enviosSnapshot -> {
+                    int nextId = enviosSnapshot.size() + 1;
+                    String formattedId = nextId + "_env"; // Formato del ID
 
-                                    // Crear un nuevo pedido
-                                    Map<String, Object> pedido = new HashMap<>();
-                                    pedido.put("idPedido", nextId);
-                                    pedido.put("idCamion", vehiculo);
-                                    pedido.put("fecha", fecha);
-                                    pedido.put("cliente", cliente);
+                    Map<String, Object> envio = new HashMap<>();
+                    envio.put("id", formattedId);
+                    envio.put("idCamion", vehiculo);
+                    envio.put("fecha", fecha);
+                    envio.put("cliente", cliente);
 
-                                    List<Map<String, Object>> productosPedido = new ArrayList<>();
-                                    for (int i = 0; i < productos.size(); i++) {
-                                        Map<String, Object> productoMap = new HashMap<>();
-                                        productoMap.put("nombre", productos.get(i).getNombre());
-                                        productoMap.put("cantidad", cantidades.get(i));
-                                        productoMap.put("precio", productos.get(i).getPrecio());
-                                        productosPedido.add(productoMap);
-                                    }
-                                    pedido.put("productos", productosPedido);
-
-                                    // Guardar el pedido en la colección "envios"
-                                    db.collection("envios").document(String.valueOf(nextId)).set(pedido)
-                                            .addOnSuccessListener(aVoid -> {
-                                                Toast.makeText(this, "Pedido de flete registrado con éxito.", Toast.LENGTH_SHORT).show();
-
-                                                // Redirigir a pantalla de confirmación
-                                                Intent intent = new Intent(SeleccionarFechaActivity.this, ConfirmacionPedidoActivity.class);
-                                                startActivity(intent);
-                                                finish();
-                                            })
-                                            .addOnFailureListener(e -> {
-                                                Toast.makeText(this, "Error al registrar el pedido.", Toast.LENGTH_SHORT).show();
-                                            });
-                                })
-                                .addOnFailureListener(e -> {
-                                    Toast.makeText(this, "Error al obtener el último ID.", Toast.LENGTH_SHORT).show();
-                                });
+                    List<Map<String, Object>> productosEnvio = new ArrayList<>();
+                    for (int i = 0; i < productos.size(); i++) {
+                        Map<String, Object> productoMap = new HashMap<>();
+                        productoMap.put("nombre", productos.get(i).getNombre());
+                        productoMap.put("cantidad", cantidades.get(i));
+                        productoMap.put("precio", productos.get(i).getPrecio());
+                        productosEnvio.add(productoMap);
                     }
+                    envio.put("productos", productosEnvio);
+
+                    db.collection("envios").document(formattedId).set(envio)
+                            .addOnSuccessListener(aVoid -> {
+                                Toast.makeText(this, "Envío registrado con éxito.", Toast.LENGTH_SHORT).show();
+
+                                // Redirigir a pantalla de confirmación
+                                Intent intent = new Intent(SeleccionarFechaActivity.this, ConfirmacionPedidoActivity.class);
+                                intent.putExtra("idEnvio", formattedId);
+                                startActivity(intent);
+                                finish();
+                            })
+                            .addOnFailureListener(e -> {
+                                Toast.makeText(this, "Error al registrar el envío.", Toast.LENGTH_SHORT).show();
+                            });
                 })
                 .addOnFailureListener(e -> {
-                    Toast.makeText(this, "Error al verificar los pedidos del vehículo.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "Error al acceder a la base de datos.", Toast.LENGTH_SHORT).show();
                 });
     }
+
+
 
 
 }

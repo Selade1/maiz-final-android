@@ -3,12 +3,9 @@ package com.example.maiz_final;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
+import android.widget.TextView;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
 public class ConfirmacionPedidoActivity extends AppCompatActivity {
 
@@ -17,23 +14,35 @@ public class ConfirmacionPedidoActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_confirmacion);
 
-        // Botón para realizar otro pedido
-        Button btnOtroPedido = findViewById(R.id.btnOtroPedido);
-        btnOtroPedido.setOnClickListener(v -> {
-            Intent intent = new Intent(ConfirmacionPedidoActivity.this, orden.class); // Regresa al menú principal
+        TextView tvConfirmacion = findViewById(R.id.tvConfirmacion);
+
+        String idPedido = getIntent().getStringExtra("idPedido");
+        String idEnvio = getIntent().getStringExtra("idEnvio");
+
+        Button btnMenu = findViewById(R.id.btnRegresarMenu);
+        Button btnPed = findViewById(R.id.btnOtroPedido);
+
+        // Redirigir al menú principal
+        btnMenu.setOnClickListener(view -> {
+            Intent intent = new Intent(ConfirmacionPedidoActivity.this, menu.class);
             startActivity(intent);
-            finish();
+            finish(); // Finalizar la actividad actual
         });
 
-        // Botón para regresar al menú
-        // Código para el botón "Regresar al menú"
-        Button btnRegresarMenu = findViewById(R.id.btnRegresarMenu);
-        btnRegresarMenu.setOnClickListener(v -> {
-            Intent intent = new Intent(ConfirmacionPedidoActivity.this, menu.class); // Cambia MainActivity por la actividad que deseas
-            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK); // Asegura que sea la pantalla principal
+        // Redirigir para realizar otro pedido
+        btnPed.setOnClickListener(view -> {
+            Intent intent = new Intent(ConfirmacionPedidoActivity.this, orden.class);
             startActivity(intent);
-            finish();
+            finish(); // Finalizar la actividad actual
         });
 
+        // Mostrar el mensaje de confirmación
+        if (idPedido != null) {
+            tvConfirmacion.setText("Pedido registrado exitosamente con ID: " + idPedido);
+        } else if (idEnvio != null) {
+            tvConfirmacion.setText("Envío registrado exitosamente con ID: " + idEnvio);
+        } else {
+            tvConfirmacion.setText("Error: No se encontró información del registro.");
+        }
     }
 }

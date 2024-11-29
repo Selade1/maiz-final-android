@@ -191,81 +191,58 @@ public class orden extends AppCompatActivity {
 
         // Verificar si el tipo de entrega es "Flete"
         if (tipoEntregaSeleccionado.equals("Flete")) {
-            // Redirigir al flujo de selección de camión y fecha
             Intent intent = new Intent(orden.this, SeleccionarVehiculoActivity.class);
-            intent.putExtra("productos", new ArrayList<>(catalogoAdapter.getCarrito().keySet())); // Productos seleccionados
-            intent.putExtra("cantidades", new ArrayList<>(catalogoAdapter.getCarrito().values())); // Cantidades seleccionadas
-            intent.putExtra("cliente", clienteSeleccionado); // Cliente seleccionado
+            intent.putExtra("productos", new ArrayList<>(catalogoAdapter.getCarrito().keySet()));
+            intent.putExtra("cantidades", new ArrayList<>(catalogoAdapter.getCarrito().values()));
+            intent.putExtra("cliente", clienteSeleccionado);
             startActivity(intent);
             return;
         }
 
-        // Si no es "Flete", continuar con el registro normal del pedido
+        // Si no es "Flete", registrar un pedido normal
         db.collection("pedidos")
                 .get()
-                .addOnSuccessListener(querySnapshot -> {
-                    // Generar ID auto incrementable para el pedido
-                    int nextId = querySnapshot.size() + 1;
-                    String idPedido = String.valueOf(nextId);
+                .addOnSuccessListener(pedidosSnapshot -> {
+                    int nextId = pedidosSnapshot.size() + 1;
+                    String formattedId = nextId + "_ped"; // Formato del ID
 
-                    // Crear un mapa para los datos del pedido
                     Map<String, Object> pedido = new HashMap<>();
-                    pedido.put("idPedido", idPedido);
-                    pedido.put("idCliente", clienteSeleccionado);
+                    pedido.put("id", formattedId);
                     pedido.put("nombreCliente", clienteSeleccionado);
                     pedido.put("tipoEntrega", tipoEntregaSeleccionado);
 
-                    // Agregar productos al pedido
                     List<Map<String, Object>> productosPedido = new ArrayList<>();
                     for (Producto producto : catalogoAdapter.getCarrito().keySet()) {
                         int cantidad = catalogoAdapter.getCarrito().get(producto);
-
-                        // Crear un mapa con los datos del producto
                         Map<String, Object> productoMap = new HashMap<>();
                         productoMap.put("nombre", producto.getNombre());
                         productoMap.put("cantidad", cantidad);
                         productoMap.put("precio", producto.getPrecio());
                         productosPedido.add(productoMap);
-
-                        // Actualizar el stock en Firestore
-                        db.collection("catalogo").whereEqualTo("Nombre_producto", producto.getNombre())
-                                .get()
-                                .addOnSuccessListener(queryDocumentSnapshots -> {
-                                    for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
-                                        int nuevoStock = producto.getStock() - cantidad;
-                                        db.collection("catalogo").document(document.getId())
-                                                .update("Stock", nuevoStock)
-                                                .addOnSuccessListener(aVoid -> {
-                                                    // Opcional: Puedes mostrar un mensaje de éxito para cada producto
-                                                })
-                                                .addOnFailureListener(e -> {
-                                                    Toast.makeText(this, "Error al actualizar el stock de " + producto.getNombre(), Toast.LENGTH_SHORT).show();
-                                                });
-                                    }
-                                })
-                                .addOnFailureListener(e -> {
-                                    Toast.makeText(this, "Error al obtener el producto " + producto.getNombre(), Toast.LENGTH_SHORT).show();
-                                });
                     }
                     pedido.put("productos", productosPedido);
 
-                    // Guardar el pedido en Firestore
-                    db.collection("pedidos").document(idPedido).set(pedido)
+                    db.collection("pedidos").document(formattedId).set(pedido)
                             .addOnSuccessListener(aVoid -> {
-                                Toast.makeText(this, "Pedido generado con éxito", Toast.LENGTH_SHORT).show();
-                                // Redirigir a activity_recibos
-                                Intent intent = new Intent(orden.this, recibos.class);
+                                Toast.makeText(this, "Pedido registrado con éxito.", Toast.LENGTH_SHORT).show();
+
+                                // Redirigir a pantalla de confirmación
+                                Intent intent = new Intent(orden.this, ConfirmacionPedidoActivity.class);
+                                intent.putExtra("idPedido", formattedId);
                                 startActivity(intent);
                                 finish();
                             })
                             .addOnFailureListener(e -> {
-                                Toast.makeText(this, "Error al generar el pedido", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(this, "Error al registrar el pedido.", Toast.LENGTH_SHORT).show();
                             });
                 })
                 .addOnFailureListener(e -> {
-                    Toast.makeText(this, "Error al acceder a la base de datos", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "Error al acceder a la base de datos.", Toast.LENGTH_SHORT).show();
                 });
     }
+
+
+
 
 
 
