@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar; // Usa la Toolbar correcta
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -25,6 +26,21 @@ public class OrdenesPendientesActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ordenes_pendientes);
 
+        // Corregir la importación y uso de la Toolbar
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        // Habilitar la funcionalidad de la flecha de regreso
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setDisplayShowHomeEnabled(true);
+        }
+
+        toolbar.setNavigationOnClickListener(v -> {
+            // Regresar a la actividad anterior
+            finish();
+        });
+
         db = FirebaseFirestore.getInstance();
         recyclerView = findViewById(R.id.recyclerViewOrdenesPendientes);
         ordenesPendientesList = new ArrayList<>();
@@ -39,16 +55,15 @@ public class OrdenesPendientesActivity extends AppCompatActivity {
     private void cargarOrdenesPendientes() {
         db.collection("pedidos").get()
                 .addOnSuccessListener(pedidosSnapshot -> {
-                    ordenesPendientesList.clear(); // Limpiar la lista antes de agregar nuevos datos
+                    ordenesPendientesList.clear();
 
                     for (QueryDocumentSnapshot document : pedidosSnapshot) {
-                        String clienteNombre = document.getString("nombreCliente"); // Usar el nombre del cliente directamente
+                        String clienteNombre = document.getString("nombreCliente");
                         String tipoEntrega = document.getString("tipoEntrega");
                         ArrayList<Map<String, Object>> productos = (ArrayList<Map<String, Object>>) document.get("productos");
-                        String idPedido = document.getId() + "_ped"; // Agregar sufijo _ped
+                        String idPedido = document.getId() + "_ped";
 
                         if ("Mostrador".equals(clienteNombre)) {
-                            // Manejar directamente los pedidos de "Mostrador"
                             OrdenPendiente pedido = new OrdenPendiente(
                                     idPedido,
                                     "Mostrador",
@@ -57,13 +72,12 @@ public class OrdenesPendientesActivity extends AppCompatActivity {
                                     productos,
                                     null,
                                     null,
-                                    "N/A", // Dirección
-                                    "N/A", // Teléfono
-                                    "N/A"  // Correo
+                                    "N/A",
+                                    "N/A",
+                                    "N/A"
                             );
                             ordenesPendientesList.add(pedido);
                         } else if (clienteNombre != null) {
-                            // Buscar datos del cliente en la colección "clientes"
                             db.collection("clientes")
                                     .whereEqualTo("nombre", clienteNombre)
                                     .get()
@@ -93,7 +107,6 @@ public class OrdenesPendientesActivity extends AppCompatActivity {
                         }
                     }
 
-                    // Cargar envíos después de pedidos
                     cargarEnvios();
                 })
                 .addOnFailureListener(e -> {
@@ -109,10 +122,9 @@ public class OrdenesPendientesActivity extends AppCompatActivity {
                         String idCamion = document.getString("idCamion");
                         String fecha = document.getString("fecha");
                         ArrayList<Map<String, Object>> productos = (ArrayList<Map<String, Object>>) document.get("productos");
-                        String idEnvio = document.getId() + "_env"; // Agregar sufijo _env
+                        String idEnvio = document.getId() + "_env";
 
                         if ("Mostrador".equals(clienteNombre)) {
-                            // Manejar directamente los envíos de "Mostrador"
                             OrdenPendiente envio = new OrdenPendiente(
                                     idEnvio,
                                     "Mostrador",
@@ -121,13 +133,12 @@ public class OrdenesPendientesActivity extends AppCompatActivity {
                                     productos,
                                     idCamion,
                                     fecha,
-                                    "N/A", // Dirección
-                                    "N/A", // Teléfono
-                                    "N/A"  // Correo
+                                    "N/A",
+                                    "N/A",
+                                    "N/A"
                             );
                             ordenesPendientesList.add(envio);
                         } else if (clienteNombre != null) {
-                            // Buscar datos del cliente en la colección "clientes"
                             db.collection("clientes")
                                     .whereEqualTo("nombre", clienteNombre)
                                     .get()
@@ -156,14 +167,10 @@ public class OrdenesPendientesActivity extends AppCompatActivity {
                                     });
                         }
                     }
-                    adapter.notifyDataSetChanged(); // Actualizar el adaptador al final
+                    adapter.notifyDataSetChanged();
                 })
                 .addOnFailureListener(e -> {
                     Toast.makeText(this, "Error al cargar envíos.", Toast.LENGTH_SHORT).show();
                 });
     }
-
-
-
-
 }
