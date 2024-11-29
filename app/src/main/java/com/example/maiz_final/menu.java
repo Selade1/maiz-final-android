@@ -43,6 +43,13 @@ public class menu extends AppCompatActivity {
             Intent intent = new Intent(menu.this, clientes.class);
             startActivity(intent);
         });
+
+        Button btnOrdenesPendientes = findViewById(R.id.btnViewOrders);
+        btnOrdenesPendientes.setOnClickListener(v -> {
+            Intent intent = new Intent(menu.this, OrdenesPendientesActivity.class);
+            startActivity(intent);
+        });
+
     }
 
     @Override
