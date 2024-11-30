@@ -13,6 +13,12 @@
         android:theme="@style/Theme.Maizfinal"
         tools:targetApi="31">
         <activity
+            android:name=".CancelarPedidoActivity"
+            android:exported="false" />
+        <activity
+            android:name=".CerrarPedidoActivity"
+            android:exported="false" />
+        <activity
             android:name=".OrdenesPendientesActivity"
             android:exported="false" />
         <activity

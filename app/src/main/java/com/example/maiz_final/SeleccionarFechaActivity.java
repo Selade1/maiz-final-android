@@ -58,7 +58,7 @@ public class SeleccionarFechaActivity extends AppCompatActivity {
             }
 
             if (esEnvio) {
-                registrarEnvio(cliente, productos, cantidades, vehiculo, fechaSeleccionada);
+                registrarEnvio(cliente, productos, cantidades, vehiculo, tipoEntrega, fechaSeleccionada);
             } else {
                 registrarPedido(cliente, tipoEntrega, productos, cantidades, fechaSeleccionada);
             }
@@ -74,8 +74,8 @@ public class SeleccionarFechaActivity extends AppCompatActivity {
 
                     Map<String, Object> pedido = new HashMap<>();
                     pedido.put("id", formattedId);
-                    pedido.put("nombreCliente", cliente);
-                    pedido.put("tipoEntrega", tipoEntrega);
+                    pedido.put("nombreCliente", cliente);  // nombreCliente
+                    pedido.put("tipoEntrega", tipoEntrega);  // tipoEntrega
                     pedido.put("fecha", fecha);
 
                     List<Map<String, Object>> productosPedido = new ArrayList<>();
@@ -102,7 +102,7 @@ public class SeleccionarFechaActivity extends AppCompatActivity {
                 });
     }
 
-    private void registrarEnvio(String cliente, ArrayList<Producto> productos, ArrayList<Integer> cantidades, String vehiculo, String fecha) {
+    private void registrarEnvio(String cliente, ArrayList<Producto> productos, ArrayList<Integer> cantidades, String vehiculo, String tipoEntrega, String fecha) {
         db.collection("envios")
                 .get()
                 .addOnSuccessListener(snapshot -> {
@@ -111,7 +111,8 @@ public class SeleccionarFechaActivity extends AppCompatActivity {
 
                     Map<String, Object> envio = new HashMap<>();
                     envio.put("id", formattedId);
-                    envio.put("cliente", cliente);
+                    envio.put("nombreCliente", cliente);  // nombreCliente
+                    envio.put("tipoEntrega", tipoEntrega);  // tipoEntrega
                     envio.put("idCamion", vehiculo);
                     envio.put("fecha", fecha);
 
@@ -138,6 +139,7 @@ public class SeleccionarFechaActivity extends AppCompatActivity {
                     Toast.makeText(this, "Error al acceder a la base de datos.", Toast.LENGTH_SHORT).show();
                 });
     }
+
 
     private void redirigirConfirmacion(String id, boolean esEnvio) {
         Intent intent = new Intent(SeleccionarFechaActivity.this, ConfirmacionPedidoActivity.class);

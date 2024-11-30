@@ -6,7 +6,6 @@
     android:layout_height="wrap_content"
     android:padding="16dp">
 
-    <!-- ID del Pedido -->
     <TextView
         android:id="@+id/tvIdPedido"
         android:layout_width="0dp"
@@ -18,7 +17,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <!-- Cliente -->
     <TextView
         android:id="@+id/tvCliente"
         android:layout_width="0dp"
@@ -31,7 +29,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="8dp" />
 
-    <!-- Tipo de Entrega -->
     <TextView
         android:id="@+id/tvTipoEntrega"
         android:layout_width="0dp"
@@ -44,7 +41,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="8dp" />
 
-    <!-- Productos -->
     <TextView
         android:id="@+id/tvProductos"
         android:layout_width="0dp"
@@ -57,4 +53,31 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="8dp" />
 
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toBottomOf="@id/tvProductos"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="16dp">
+
+        <Button
+            android:id="@+id/btnCerrarPedido"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Cerrar pedido"
+            android:backgroundTint="#FFA451"
+            android:textColor="@android:color/white"
+            android:layout_marginEnd="8dp"/>
+
+        <Button
+            android:id="@+id/btnCancelarPedido"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Cancelar pedido"
+            android:backgroundTint="#FFA451"
+            android:textColor="@android:color/white"/>
+
+    </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

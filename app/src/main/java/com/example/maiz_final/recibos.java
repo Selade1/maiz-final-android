@@ -37,7 +37,7 @@ public class recibos extends AppCompatActivity {
 
         // Configurar RecyclerView
         pedidosList = new ArrayList<>();
-        recibosAdapter = new RecibosAdapter(pedidosList);
+        recibosAdapter = new RecibosAdapter(this, pedidosList); // Pasar el contexto
         recyclerViewRecibos.setLayoutManager(new LinearLayoutManager(this));
         recyclerViewRecibos.setAdapter(recibosAdapter);
 
@@ -50,8 +50,8 @@ public class recibos extends AppCompatActivity {
                 .addOnSuccessListener(queryDocumentSnapshots -> {
                     pedidosList.clear();
                     for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
-                        String id = document.getString("idPedido");
-                        String cliente = document.getString("nombreCliente"); // Ajustado para coincidir con tu modelo
+                        String id = document.getString("id");
+                        String cliente = document.getString("nombreCliente");
                         String tipoEntrega = document.getString("tipoEntrega");
 
                         // Convertir productos a List<Map<String, Object>>

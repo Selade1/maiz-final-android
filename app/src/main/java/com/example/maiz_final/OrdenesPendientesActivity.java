@@ -4,7 +4,7 @@ import android.os.Bundle;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar; // Usa la Toolbar correcta
+import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -26,27 +26,22 @@ public class OrdenesPendientesActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ordenes_pendientes);
 
-        // Corregir la importación y uso de la Toolbar
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        // Habilitar la funcionalidad de la flecha de regreso
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setDisplayShowHomeEnabled(true);
         }
 
-        toolbar.setNavigationOnClickListener(v -> {
-            // Regresar a la actividad anterior
-            finish();
-        });
+        toolbar.setNavigationOnClickListener(v -> finish());
 
         db = FirebaseFirestore.getInstance();
         recyclerView = findViewById(R.id.recyclerViewOrdenesPendientes);
         ordenesPendientesList = new ArrayList<>();
 
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        adapter = new OrdenesPendientesAdapter(ordenesPendientesList);
+        adapter = new OrdenesPendientesAdapter(this, ordenesPendientesList);
         recyclerView.setAdapter(adapter);
 
         cargarOrdenesPendientes();
@@ -109,9 +104,7 @@ public class OrdenesPendientesActivity extends AppCompatActivity {
 
                     cargarEnvios();
                 })
-                .addOnFailureListener(e -> {
-                    Toast.makeText(this, "Error al cargar pedidos.", Toast.LENGTH_SHORT).show();
-                });
+                .addOnFailureListener(e -> Toast.makeText(this, "Error al cargar pedidos.", Toast.LENGTH_SHORT).show());
     }
 
     private void cargarEnvios() {
@@ -169,8 +162,6 @@ public class OrdenesPendientesActivity extends AppCompatActivity {
                     }
                     adapter.notifyDataSetChanged();
                 })
-                .addOnFailureListener(e -> {
-                    Toast.makeText(this, "Error al cargar envíos.", Toast.LENGTH_SHORT).show();
-                });
+                .addOnFailureListener(e -> Toast.makeText(this, "Error al cargar envíos.", Toast.LENGTH_SHORT).show());
     }
 }

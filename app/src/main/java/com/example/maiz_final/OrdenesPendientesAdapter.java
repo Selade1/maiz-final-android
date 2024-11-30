@@ -1,8 +1,11 @@
 package com.example.maiz_final;
 
+import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -14,16 +17,18 @@ import java.util.Map;
 
 public class OrdenesPendientesAdapter extends RecyclerView.Adapter<OrdenesPendientesAdapter.OrdenPendienteViewHolder> {
 
+    private final Context context;
     private final List<OrdenPendiente> ordenesPendientes;
 
-    public OrdenesPendientesAdapter(List<OrdenPendiente> ordenesPendientes) {
+    public OrdenesPendientesAdapter(Context context, List<OrdenPendiente> ordenesPendientes) {
+        this.context = context;
         this.ordenesPendientes = ordenesPendientes;
     }
 
     @NonNull
     @Override
     public OrdenPendienteViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_orden_pendiente, parent, false);
+        View view = LayoutInflater.from(context).inflate(R.layout.item_orden_pendiente_expandible, parent, false);
         return new OrdenPendienteViewHolder(view);
     }
 
@@ -31,22 +36,18 @@ public class OrdenesPendientesAdapter extends RecyclerView.Adapter<OrdenesPendie
     public void onBindViewHolder(@NonNull OrdenPendienteViewHolder holder, int position) {
         OrdenPendiente orden = ordenesPendientes.get(position);
 
-        // Mostrar tipo y cliente junto con el ID
         holder.tvOrden.setText(orden.getTipo() + ": " + orden.getCliente() + " (" + orden.getId() + ")");
 
         holder.itemView.setOnClickListener(v -> {
             if (holder.detalleLayout.getVisibility() == View.VISIBLE) {
-                holder.detalleLayout.setVisibility(View.GONE); // Ocultar detalles
+                holder.detalleLayout.setVisibility(View.GONE);
             } else {
                 StringBuilder detalles = new StringBuilder();
-
-                // Información del cliente
                 detalles.append("Cliente: ").append(orden.getCliente()).append("\n");
                 detalles.append("Dirección: ").append(orden.getDireccion() != null ? orden.getDireccion() : "N/A").append("\n");
                 detalles.append("Teléfono: ").append(orden.getTelefono() != null ? orden.getTelefono() : "N/A").append("\n");
                 detalles.append("Correo: ").append(orden.getCorreo() != null ? orden.getCorreo() : "N/A").append("\n");
 
-                // Información específica de pedidos/envíos
                 if ("Pedido".equals(orden.getTipo())) {
                     detalles.append("Tipo de Entrega: ").append(orden.getTipoEntrega()).append("\n");
                 } else if ("Envío".equals(orden.getTipo())) {
@@ -54,7 +55,6 @@ public class OrdenesPendientesAdapter extends RecyclerView.Adapter<OrdenesPendie
                     detalles.append("Fecha: ").append(orden.getFecha()).append("\n");
                 }
 
-                // Información de los productos
                 detalles.append("\nProductos:\n");
                 for (Map<String, Object> producto : orden.getProductos()) {
                     detalles.append("- ").append(producto.get("nombre"))
@@ -64,13 +64,22 @@ public class OrdenesPendientesAdapter extends RecyclerView.Adapter<OrdenesPendie
                 }
 
                 holder.tvDetalle.setText(detalles.toString());
-                holder.detalleLayout.setVisibility(View.VISIBLE); // Mostrar detalles
+                holder.detalleLayout.setVisibility(View.VISIBLE);
             }
         });
+
+        holder.btnCerrar.setOnClickListener(v -> {
+            Intent intent = new Intent(context, CerrarPedidoActivity.class);
+            intent.putExtra("idOrden", orden.getId());
+            context.startActivity(intent);
+        });
+
+        holder.btnCancelar.setOnClickListener(v -> {
+            Intent intent = new Intent(context, CancelarPedidoActivity.class);
+            intent.putExtra("idOrden", orden.getId());
+            context.startActivity(intent);
+        });
     }
-
-
-
 
     @Override
     public int getItemCount() {
@@ -78,17 +87,17 @@ public class OrdenesPendientesAdapter extends RecyclerView.Adapter<OrdenesPendie
     }
 
     static class OrdenPendienteViewHolder extends RecyclerView.ViewHolder {
-        TextView tvOrden;
-        TextView tvDetalle;
+        TextView tvOrden, tvDetalle;
         LinearLayout detalleLayout;
+        Button btnCerrar, btnCancelar;
 
         public OrdenPendienteViewHolder(@NonNull View itemView) {
             super(itemView);
-
-            // Asocia las vistas del XML con las variables
             tvOrden = itemView.findViewById(R.id.tvOrden);
-            tvDetalle = itemView.findViewById(R.id.tvDetalle); // ID del TextView para los detalles
-            detalleLayout = itemView.findViewById(R.id.detalleLayout); // ID del layout contenedor de los detalles
+            tvDetalle = itemView.findViewById(R.id.tvDetalles);
+            detalleLayout = itemView.findViewById(R.id.containerDetalles);
+            btnCerrar = itemView.findViewById(R.id.btnCerrarPedido);
+            btnCancelar = itemView.findViewById(R.id.btnCancelarPedido);
         }
     }
 }
