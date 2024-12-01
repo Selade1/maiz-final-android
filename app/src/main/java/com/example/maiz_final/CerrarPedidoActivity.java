@@ -75,10 +75,13 @@ public class CerrarPedidoActivity extends AppCompatActivity {
     }
 
     private void cerrarPedido(String idOrden, String tipo) {
-        if (idOrden == null || tipo == null) {
+        if (idOrden == null || idOrden.isEmpty() || tipo == null) {
             Toast.makeText(this, "Datos inválidos para cerrar el pedido.", Toast.LENGTH_SHORT).show();
             return;
         }
+
+        // Corregir posibles errores en el ID
+        idOrden = corregirId(idOrden);
 
         String collection = "Pedido".equals(tipo) ? "pedidos" : "envios";
 
@@ -88,6 +91,17 @@ public class CerrarPedidoActivity extends AppCompatActivity {
                     Toast.makeText(this, "Pedido cerrado exitosamente.", Toast.LENGTH_SHORT).show();
                     finish(); // Regresar a la actividad anterior
                 })
-                .addOnFailureListener(e -> Toast.makeText(this, "Error al cerrar el pedido: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+                .addOnFailureListener(e -> {
+                    Toast.makeText(this, "Error al cerrar el pedido: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
+    }
+
+    private String corregirId(String idOrden) {
+        if (idOrden.contains("_ped_ped")) {
+            return idOrden.replace("_ped_ped", "_ped");
+        } else if (idOrden.contains("_env_env")) {
+            return idOrden.replace("_env_env", "_env");
+        }
+        return idOrden;
     }
 }
