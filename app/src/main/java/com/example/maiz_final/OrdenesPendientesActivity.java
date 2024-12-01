@@ -48,19 +48,25 @@ public class OrdenesPendientesActivity extends AppCompatActivity {
     }
 
     private void cargarOrdenesPendientes() {
-        db.collection("pedidos").get()
+        db.collection("pedidos")
+                .get()
                 .addOnSuccessListener(pedidosSnapshot -> {
                     ordenesPendientesList.clear();
 
                     for (QueryDocumentSnapshot document : pedidosSnapshot) {
+                        // Filtrar pedidos que tienen el campo "estado"
+                        if (document.contains("estado")) {
+                            continue; // Ignorar pedidos con "estado"
+                        }
+
                         String clienteNombre = document.getString("nombreCliente");
                         String tipoEntrega = document.getString("tipoEntrega");
                         ArrayList<Map<String, Object>> productos = (ArrayList<Map<String, Object>>) document.get("productos");
-                        String idPedido = document.getId() + "_ped";
+                        String idPedido = document.getId(); // Usar el ID del documento directamente
 
                         if ("Mostrador".equals(clienteNombre)) {
                             OrdenPendiente pedido = new OrdenPendiente(
-                                    idPedido,
+                                    idPedido + "_ped",
                                     "Mostrador",
                                     "Pedido",
                                     tipoEntrega,
@@ -84,7 +90,7 @@ public class OrdenesPendientesActivity extends AppCompatActivity {
                                             String correo = clienteDoc.getString("correo");
 
                                             OrdenPendiente pedido = new OrdenPendiente(
-                                                    idPedido,
+                                                    idPedido + "_ped",
                                                     clienteNombre,
                                                     "Pedido",
                                                     tipoEntrega,
@@ -102,24 +108,31 @@ public class OrdenesPendientesActivity extends AppCompatActivity {
                         }
                     }
 
-                    cargarEnvios();
+                    cargarEnvios(); // Después de cargar los pedidos, cargar envíos
                 })
-                .addOnFailureListener(e -> Toast.makeText(this, "Error al cargar pedidos.", Toast.LENGTH_SHORT).show());
+                .addOnFailureListener(e -> {
+                    Toast.makeText(this, "Error al cargar pedidos.", Toast.LENGTH_SHORT).show();
+                });
     }
 
     private void cargarEnvios() {
         db.collection("envios").get()
                 .addOnSuccessListener(enviosSnapshot -> {
                     for (QueryDocumentSnapshot document : enviosSnapshot) {
-                        String clienteNombre = document.getString("cliente");
+                        // Filtrar envíos que tienen el campo "estado"
+                        if (document.contains("estado")) {
+                            continue; // Ignorar envíos con "estado"
+                        }
+
+                        String clienteNombre = document.getString("nombreCliente");
                         String idCamion = document.getString("idCamion");
                         String fecha = document.getString("fecha");
                         ArrayList<Map<String, Object>> productos = (ArrayList<Map<String, Object>>) document.get("productos");
-                        String idEnvio = document.getId() + "_env";
+                        String idEnvio = document.getId(); // Usar el ID del documento directamente
 
                         if ("Mostrador".equals(clienteNombre)) {
                             OrdenPendiente envio = new OrdenPendiente(
-                                    idEnvio,
+                                    idEnvio + "_env",
                                     "Mostrador",
                                     "Envío",
                                     null,
@@ -143,7 +156,7 @@ public class OrdenesPendientesActivity extends AppCompatActivity {
                                             String correo = clienteDoc.getString("correo");
 
                                             OrdenPendiente envio = new OrdenPendiente(
-                                                    idEnvio,
+                                                    idEnvio + "_env",
                                                     clienteNombre,
                                                     "Envío",
                                                     null,
@@ -155,13 +168,15 @@ public class OrdenesPendientesActivity extends AppCompatActivity {
                                                     correo != null ? correo : "N/A"
                                             );
                                             ordenesPendientesList.add(envio);
+                                            adapter.notifyDataSetChanged();
                                         }
-                                        adapter.notifyDataSetChanged();
                                     });
                         }
                     }
                     adapter.notifyDataSetChanged();
                 })
-                .addOnFailureListener(e -> Toast.makeText(this, "Error al cargar envíos.", Toast.LENGTH_SHORT).show());
+                .addOnFailureListener(e -> {
+                    Toast.makeText(this, "Error al cargar envíos.", Toast.LENGTH_SHORT).show();
+                });
     }
 }

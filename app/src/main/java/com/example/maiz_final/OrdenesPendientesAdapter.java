@@ -12,6 +12,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -71,12 +72,30 @@ public class OrdenesPendientesAdapter extends RecyclerView.Adapter<OrdenesPendie
         holder.btnCerrar.setOnClickListener(v -> {
             Intent intent = new Intent(context, CerrarPedidoActivity.class);
             intent.putExtra("idOrden", orden.getId());
+            intent.putExtra("cliente", orden.getCliente());
+            intent.putExtra("direccion", orden.getDireccion());
+            intent.putExtra("telefono", orden.getTelefono());
+            intent.putExtra("correo", orden.getCorreo());
+            intent.putExtra("tipo", orden.getTipo());
+            intent.putExtra("tipoEntrega", orden.getTipoEntrega());
+            intent.putExtra("idCamion", orden.getIdCamion());
+            intent.putExtra("fecha", orden.getFecha());
+            intent.putExtra("productos", new ArrayList<>(orden.getProductos())); // Convertir a ArrayList para serialización
             context.startActivity(intent);
         });
 
         holder.btnCancelar.setOnClickListener(v -> {
             Intent intent = new Intent(context, CancelarPedidoActivity.class);
             intent.putExtra("idOrden", orden.getId());
+            intent.putExtra("cliente", orden.getCliente());
+            intent.putExtra("direccion", orden.getDireccion());
+            intent.putExtra("telefono", orden.getTelefono());
+            intent.putExtra("correo", orden.getCorreo());
+            intent.putExtra("tipo", orden.getTipo());
+            intent.putExtra("tipoEntrega", orden.getTipoEntrega());
+            intent.putExtra("idCamion", orden.getIdCamion());
+            intent.putExtra("fecha", orden.getFecha());
+            intent.putExtra("productos", new ArrayList<>(orden.getProductos())); // Convertir a ArrayList para serialización
             context.startActivity(intent);
         });
     }

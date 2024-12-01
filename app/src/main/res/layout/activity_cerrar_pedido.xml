@@ -5,21 +5,45 @@
     android:layout_height="match_parent"
     android:padding="16dp">
 
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/cerrartoolbar"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="#FFA451"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        android:elevation="4dp"
+        app:title="Realizar Orden"
+        app:titleTextColor="@android:color/white"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- Título o mensaje -->
+    <TextView
+        android:id="@+id/tvMensaje"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="18sp"
+        android:textColor="@android:color/black"
+        android:layout_marginBottom="16dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <!-- Detalles del pedido -->
     <TextView
         android:id="@+id/tvDetalles"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="16sp"
         android:textColor="@android:color/black"
-        android:layout_marginBottom="16dp"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvMensaje"
         app:layout_constraintStart_toStartOf="parent" />
 
     <Button
         android:id="@+id/btnConfirmarCerrar"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Confirmar Cerrar "
+        android:text="Confirmar Cerrar"
         android:backgroundTint="#FF0000"
         android:textColor="@android:color/white"
         app:layout_constraintBottom_toBottomOf="parent"
