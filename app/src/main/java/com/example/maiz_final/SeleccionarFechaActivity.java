@@ -20,6 +20,13 @@ public class SeleccionarFechaActivity extends AppCompatActivity {
     private String fechaSeleccionada;
     private FirebaseFirestore db;
 
+    private String formatFecha(int year, int month, int day) {
+        // Formatear el mes y el día con dos dígitos
+        String mes = (month < 9 ? "0" : "") + (month + 1); // Los meses empiezan desde 0, por eso sumamos 1
+        String dia = (day < 10 ? "0" : "") + day;
+        return year + "-" + mes + "-" + dia;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,7 +53,7 @@ public class SeleccionarFechaActivity extends AppCompatActivity {
         CalendarView calendarView = findViewById(R.id.calendarView);
         calendarView.setMinDate(System.currentTimeMillis()); // Bloquear fechas pasadas
         calendarView.setOnDateChangeListener((view, year, month, dayOfMonth) -> {
-            fechaSeleccionada = year + "-" + (month + 1) + "-" + dayOfMonth;
+            fechaSeleccionada = formatFecha(year, month, dayOfMonth); // Formatear la fecha seleccionada
         });
 
         // Configurar el botón "Realizar orden"
@@ -64,6 +71,7 @@ public class SeleccionarFechaActivity extends AppCompatActivity {
             }
         });
     }
+
 
     private void registrarPedido(String cliente, String tipoEntrega, ArrayList<Producto> productos, ArrayList<Integer> cantidades, String fecha) {
         db.collection("pedidos")
