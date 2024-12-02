@@ -25,42 +25,42 @@ public class SeleccionarFechaActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_seleccionar_fecha);
 
+        // Inicializar Firebase Firestore
         db = FirebaseFirestore.getInstance();
 
-        // Recuperar datos del Intent
+        // Obtener datos del Intent
         String cliente = getIntent().getStringExtra("cliente");
-        String tipoEntrega = getIntent().getStringExtra("tipoEntrega");
+        String vehiculo = getIntent().getStringExtra("vehiculo");
         ArrayList<Producto> productos = getIntent().getParcelableArrayListExtra("productos");
         ArrayList<Integer> cantidades = (ArrayList<Integer>) getIntent().getSerializableExtra("cantidades");
         boolean esEnvio = getIntent().getBooleanExtra("esEnvio", false);
-        String vehiculo = getIntent().getStringExtra("vehiculo");
 
         // Validar datos recibidos
-        if (productos == null || cantidades == null || cliente == null || tipoEntrega == null || (esEnvio && vehiculo == null)) {
+        if (productos == null || cantidades == null || cliente == null || (esEnvio && vehiculo == null)) {
             Toast.makeText(this, "Error al cargar los datos del pedido/envío.", Toast.LENGTH_SHORT).show();
             finish();
             return;
         }
 
-        // Configurar el calendario
+        // Configurar el CalendarView para seleccionar la fecha
         CalendarView calendarView = findViewById(R.id.calendarView);
-        calendarView.setMinDate(System.currentTimeMillis() + (24 * 60 * 60 * 1000));
+        calendarView.setMinDate(System.currentTimeMillis()); // Bloquear fechas pasadas
         calendarView.setOnDateChangeListener((view, year, month, dayOfMonth) -> {
             fechaSeleccionada = year + "-" + (month + 1) + "-" + dayOfMonth;
         });
 
-        // Configurar el botón "Registrar"
-        Button btnRegistrar = findViewById(R.id.btnRealizarPedido);
-        btnRegistrar.setOnClickListener(v -> {
+        // Configurar el botón "Realizar orden"
+        Button btnRealizarPedido = findViewById(R.id.btnRealizarPedido);
+        btnRealizarPedido.setOnClickListener(v -> {
             if (fechaSeleccionada == null) {
                 Toast.makeText(this, "Selecciona una fecha válida.", Toast.LENGTH_SHORT).show();
                 return;
             }
 
             if (esEnvio) {
-                registrarEnvio(cliente, productos, cantidades, vehiculo, tipoEntrega, fechaSeleccionada);
+                registrarEnvio(cliente, productos, cantidades, vehiculo, fechaSeleccionada);
             } else {
-                registrarPedido(cliente, tipoEntrega, productos, cantidades, fechaSeleccionada);
+                registrarPedido(cliente, "En sitio", productos, cantidades, fechaSeleccionada);
             }
         });
     }
@@ -74,8 +74,8 @@ public class SeleccionarFechaActivity extends AppCompatActivity {
 
                     Map<String, Object> pedido = new HashMap<>();
                     pedido.put("id", formattedId);
-                    pedido.put("nombreCliente", cliente);  // nombreCliente
-                    pedido.put("tipoEntrega", tipoEntrega);  // tipoEntrega
+                    pedido.put("nombreCliente", cliente);
+                    pedido.put("tipoEntrega", tipoEntrega);
                     pedido.put("fecha", fecha);
 
                     List<Map<String, Object>> productosPedido = new ArrayList<>();
@@ -102,7 +102,7 @@ public class SeleccionarFechaActivity extends AppCompatActivity {
                 });
     }
 
-    private void registrarEnvio(String cliente, ArrayList<Producto> productos, ArrayList<Integer> cantidades, String vehiculo, String tipoEntrega, String fecha) {
+    private void registrarEnvio(String cliente, ArrayList<Producto> productos, ArrayList<Integer> cantidades, String vehiculoId, String fecha) {
         db.collection("envios")
                 .get()
                 .addOnSuccessListener(snapshot -> {
@@ -111,10 +111,9 @@ public class SeleccionarFechaActivity extends AppCompatActivity {
 
                     Map<String, Object> envio = new HashMap<>();
                     envio.put("id", formattedId);
-                    envio.put("nombreCliente", cliente);  // nombreCliente
-                    envio.put("tipoEntrega", tipoEntrega);  // tipoEntrega
-                    envio.put("idCamion", vehiculo);
+                    envio.put("nombreCliente", cliente);
                     envio.put("fecha", fecha);
+                    envio.put("idCamion", vehiculoId);
 
                     List<Map<String, Object>> productosEnvio = new ArrayList<>();
                     for (int i = 0; i < productos.size(); i++) {
@@ -132,14 +131,13 @@ public class SeleccionarFechaActivity extends AppCompatActivity {
                                 redirigirConfirmacion(formattedId, true);
                             })
                             .addOnFailureListener(e -> {
-                                Toast.makeText(this, "Error al registrar el envío.", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(this, "Error al registrar el envío: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                             });
                 })
                 .addOnFailureListener(e -> {
-                    Toast.makeText(this, "Error al acceder a la base de datos.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "Error al acceder a la base de datos: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
     }
-
 
     private void redirigirConfirmacion(String id, boolean esEnvio) {
         Intent intent = new Intent(SeleccionarFechaActivity.this, ConfirmacionPedidoActivity.class);

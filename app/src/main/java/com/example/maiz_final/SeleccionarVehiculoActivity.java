@@ -26,28 +26,32 @@ public class SeleccionarVehiculoActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_seleccionar_vehiculo);
 
+        // Inicializar Firestore
         db = FirebaseFirestore.getInstance();
+
+        // Configurar RecyclerView
         recyclerViewVehiculos = findViewById(R.id.recyclerVehiculos);
         recyclerViewVehiculos.setLayoutManager(new LinearLayoutManager(this));
 
+        // Inicializar lista de vehículos
         listaVehiculos = new ArrayList<>();
+
+        // Cargar vehículos desde Firestore
         cargarVehiculos();
 
-        // Inicializar adaptador
+        // Configurar adaptador y manejar clic en un vehículo
         vehiculosAdapter = new VehiculosAdapter(listaVehiculos, vehiculo -> {
-            Toast.makeText(this, "Vehículo seleccionado: " + vehiculo, Toast.LENGTH_SHORT).show();
-
-            // Pasar datos a la siguiente actividad
+            String vehiculoId = vehiculo.split(" ")[0]; // Extraer solo el ID del vehículo
             Intent intent = new Intent(SeleccionarVehiculoActivity.this, SeleccionarFechaActivity.class);
-            intent.putExtra("vehiculo", vehiculo);
+            intent.putExtra("vehiculo", vehiculoId); // Pasar solo el ID
             intent.putExtra("cliente", getIntent().getStringExtra("cliente"));
             intent.putExtra("productos", getIntent().getParcelableArrayListExtra("productos"));
             intent.putExtra("cantidades", getIntent().getSerializableExtra("cantidades"));
-            intent.putExtra("tipoEntrega", "Flete"); // Confirmar el tipo de entrega
-            intent.putExtra("esEnvio", true); // Marcar como envío
+            intent.putExtra("esEnvio", true);
             startActivity(intent);
             finish();
         });
+
 
         recyclerViewVehiculos.setAdapter(vehiculosAdapter);
 
@@ -55,6 +59,7 @@ public class SeleccionarVehiculoActivity extends AppCompatActivity {
         Button btnRegresar = findViewById(R.id.btnBack);
         btnRegresar.setOnClickListener(v -> finish());
     }
+
 
     private void cargarVehiculos() {
         db.collection("vehiculo")
