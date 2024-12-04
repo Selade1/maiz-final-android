@@ -159,11 +159,12 @@ public class orden extends AppCompatActivity {
                     productosList.clear();
                     for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
                         String nombre = document.getString("Nombre_producto");
-                        Long precio = document.getLong("Precio");
+                        Double precio = document.getDouble("Precio");
                         Long stock = document.getLong("Stock");
+                        String imageUrl = document.getString("imageUrl");
 
-                        if (nombre != null && precio != null && stock != null) {
-                            productosList.add(new Producto(nombre, precio.intValue(), stock.intValue()));
+                        if (nombre != null && precio != null && stock != null && imageUrl != null) {
+                            productosList.add(new Producto(nombre, precio.intValue(), stock.intValue(), imageUrl));
                         }
                     }
                     catalogoAdapter.notifyDataSetChanged();
@@ -172,6 +173,8 @@ public class orden extends AppCompatActivity {
                     Toast.makeText(orden.this, "Error al cargar el catálogo.", Toast.LENGTH_SHORT).show();
                 });
     }
+
+
 
     private void realizarPedido() {
         if (clienteSeleccionado == null || clienteSeleccionado.equals("Selecciona un cliente")) {
@@ -209,14 +212,6 @@ public class orden extends AppCompatActivity {
         intent.putExtra("tipoEntrega", tipoEntregaSeleccionado); // Tipo de entrega
         startActivity(intent);
     }
-
-
-
-
-
-
-
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {

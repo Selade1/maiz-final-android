@@ -7,11 +7,22 @@ public class Producto implements Parcelable {
     private String nombre;
     private int precio;
     private int stock;
+    private String imageUrl; // Nuevo campo para la URL de la imagen
 
-    public Producto(String nombre, int precio, int stock) {
+    // Constructor actualizado
+    public Producto(String nombre, int precio, int stock, String imageUrl) {
         this.nombre = nombre;
         this.precio = precio;
         this.stock = stock;
+        this.imageUrl = imageUrl;
+    }
+
+    // Constructor Parcelable
+    protected Producto(Parcel in) {
+        nombre = in.readString();
+        precio = in.readInt();
+        stock = in.readInt();
+        imageUrl = in.readString(); // Leer la URL de la imagen
     }
 
     // Getters
@@ -27,23 +38,26 @@ public class Producto implements Parcelable {
         return stock;
     }
 
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
     // Setters
     public void setStock(int stock) {
         this.stock = stock;
     }
 
-    // Parcelable implementation
-    protected Producto(Parcel in) {
-        nombre = in.readString();
-        precio = in.readInt();
-        stock = in.readInt();
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 
+    // Parcelable implementation
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(nombre);
         dest.writeInt(precio);
         dest.writeInt(stock);
+        dest.writeString(imageUrl); // Escribir la URL de la imagen
     }
 
     @Override

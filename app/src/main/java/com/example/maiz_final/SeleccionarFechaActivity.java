@@ -1,5 +1,7 @@
 package com.example.maiz_final;
 
+import static android.content.Intent.getIntent;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
