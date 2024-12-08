@@ -72,7 +72,15 @@ public class SeleccionarFechaActivity extends AppCompatActivity {
                 registrarPedido(cliente, "En sitio", productos, cantidades, fechaSeleccionada);
             }
         });
+
+        Button btnRegresarSeleccionVehiculo = findViewById(R.id.btnRegresarSeleccionVehiculo);
+        btnRegresarSeleccionVehiculo.setOnClickListener(v -> {
+            Intent intent = new Intent(SeleccionarFechaActivity.this, SeleccionarVehiculoActivity.class);
+            startActivity(intent);
+            finish(); // Cierra la actividad actual
+        });
     }
+
 
 
     private void registrarPedido(String cliente, String tipoEntrega, ArrayList<Producto> productos, ArrayList<Integer> cantidades, String fecha) {
@@ -112,42 +120,59 @@ public class SeleccionarFechaActivity extends AppCompatActivity {
                 });
     }
 
+
     private void registrarEnvio(String cliente, ArrayList<Producto> productos, ArrayList<Integer> cantidades, String vehiculoId, String fecha) {
         db.collection("envios")
+                .whereEqualTo("idCamion", vehiculoId)
+                .whereEqualTo("fecha", fecha)
                 .get()
                 .addOnSuccessListener(snapshot -> {
-                    int nextId = snapshot.size() + 1;
-                    String formattedId = nextId + "_env";
+                    if (snapshot.size() >= 2) {
+                        // Validar límite de 2 envíos por camión por día
+                        Toast.makeText(this, "Este camión ya alcanzó el límite de 2 envíos para la fecha seleccionada.", Toast.LENGTH_SHORT).show();
+                    } else {
+                        // Continuar con el registro del envío
+                        db.collection("envios")
+                                .get()
+                                .addOnSuccessListener(envioSnapshot -> {
+                                    int nextId = envioSnapshot.size() + 1;
+                                    String formattedId = nextId + "_env";
 
-                    Map<String, Object> envio = new HashMap<>();
-                    envio.put("id", formattedId);
-                    envio.put("nombreCliente", cliente);
-                    envio.put("fecha", fecha);
-                    envio.put("idCamion", vehiculoId);
+                                    Map<String, Object> envio = new HashMap<>();
+                                    envio.put("id", formattedId);
+                                    envio.put("nombreCliente", cliente);
+                                    envio.put("fecha", fecha);
+                                    envio.put("idCamion", vehiculoId);
 
-                    List<Map<String, Object>> productosEnvio = new ArrayList<>();
-                    for (int i = 0; i < productos.size(); i++) {
-                        Map<String, Object> productoMap = new HashMap<>();
-                        productoMap.put("nombre", productos.get(i).getNombre());
-                        productoMap.put("cantidad", cantidades.get(i));
-                        productoMap.put("precio", productos.get(i).getPrecio());
-                        productosEnvio.add(productoMap);
+                                    List<Map<String, Object>> productosEnvio = new ArrayList<>();
+                                    for (int i = 0; i < productos.size(); i++) {
+                                        Map<String, Object> productoMap = new HashMap<>();
+                                        productoMap.put("nombre", productos.get(i).getNombre());
+                                        productoMap.put("cantidad", cantidades.get(i));
+                                        productoMap.put("precio", productos.get(i).getPrecio());
+                                        productosEnvio.add(productoMap);
+                                    }
+                                    envio.put("productos", productosEnvio);
+
+                                    db.collection("envios").document(formattedId).set(envio)
+                                            .addOnSuccessListener(aVoid -> {
+                                                Toast.makeText(this, "Envío registrado con éxito.", Toast.LENGTH_SHORT).show();
+                                                redirigirConfirmacion(formattedId, true);
+                                            })
+                                            .addOnFailureListener(e -> {
+                                                Toast.makeText(this, "Error al registrar el envío: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                                            });
+                                })
+                                .addOnFailureListener(e -> {
+                                    Toast.makeText(this, "Error al generar el ID del envío: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                                });
                     }
-                    envio.put("productos", productosEnvio);
-
-                    db.collection("envios").document(formattedId).set(envio)
-                            .addOnSuccessListener(aVoid -> {
-                                Toast.makeText(this, "Envío registrado con éxito.", Toast.LENGTH_SHORT).show();
-                                redirigirConfirmacion(formattedId, true);
-                            })
-                            .addOnFailureListener(e -> {
-                                Toast.makeText(this, "Error al registrar el envío: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                            });
                 })
                 .addOnFailureListener(e -> {
-                    Toast.makeText(this, "Error al acceder a la base de datos: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "Error al validar límite de envíos por camión: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
     }
+
 
     private void redirigirConfirmacion(String id, boolean esEnvio) {
         Intent intent = new Intent(SeleccionarFechaActivity.this, ConfirmacionPedidoActivity.class);
