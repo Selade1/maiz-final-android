@@ -1,5 +1,6 @@
 package com.example.maiz_final;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.TextView;
@@ -75,13 +76,10 @@ public class CerrarPedidoActivity extends AppCompatActivity {
     }
 
     private void cerrarPedido(String idOrden, String tipo) {
-        if (idOrden == null || idOrden.isEmpty() || tipo == null) {
+        if (idOrden == null || tipo == null) {
             Toast.makeText(this, "Datos inválidos para cerrar el pedido.", Toast.LENGTH_SHORT).show();
             return;
         }
-
-        // Corregir posibles errores en el ID
-        idOrden = corregirId(idOrden);
 
         String collection = "Pedido".equals(tipo) ? "pedidos" : "envios";
 
@@ -89,12 +87,15 @@ public class CerrarPedidoActivity extends AppCompatActivity {
                 .update("estado", "cerrado")
                 .addOnSuccessListener(aVoid -> {
                     Toast.makeText(this, "Pedido cerrado exitosamente.", Toast.LENGTH_SHORT).show();
-                    finish(); // Regresar a la actividad anterior
+                    // Redirigir de vuelta a activity_ordenes_pendientes.xml
+                    Intent intent = new Intent(CerrarPedidoActivity.this, OrdenesPendientesActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(intent);
+                    finish();
                 })
-                .addOnFailureListener(e -> {
-                    Toast.makeText(this, "Error al cerrar el pedido: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                });
+                .addOnFailureListener(e -> Toast.makeText(this, "Error al cerrar el pedido: " + e.getMessage(), Toast.LENGTH_SHORT).show());
     }
+
 
     private String corregirId(String idOrden) {
         if (idOrden.contains("_ped_ped")) {

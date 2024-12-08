@@ -66,7 +66,7 @@ public class OrdenesPendientesActivity extends AppCompatActivity {
 
                         if ("Mostrador".equals(clienteNombre)) {
                             OrdenPendiente pedido = new OrdenPendiente(
-                                    idPedido + "_ped",
+                                    idPedido,
                                     "Mostrador",
                                     "Pedido",
                                     tipoEntrega,
@@ -90,7 +90,7 @@ public class OrdenesPendientesActivity extends AppCompatActivity {
                                             String correo = clienteDoc.getString("correo");
 
                                             OrdenPendiente pedido = new OrdenPendiente(
-                                                    idPedido + "_ped",
+                                                    idPedido,
                                                     clienteNombre,
                                                     "Pedido",
                                                     tipoEntrega,
@@ -110,9 +110,7 @@ public class OrdenesPendientesActivity extends AppCompatActivity {
 
                     cargarEnvios(); // Después de cargar los pedidos, cargar envíos
                 })
-                .addOnFailureListener(e -> {
-                    Toast.makeText(this, "Error al cargar pedidos.", Toast.LENGTH_SHORT).show();
-                });
+                .addOnFailureListener(e -> Toast.makeText(this, "Error al cargar pedidos.", Toast.LENGTH_SHORT).show());
     }
 
     private void cargarEnvios() {
@@ -132,7 +130,7 @@ public class OrdenesPendientesActivity extends AppCompatActivity {
 
                         if ("Mostrador".equals(clienteNombre)) {
                             OrdenPendiente envio = new OrdenPendiente(
-                                    idEnvio + "_env",
+                                    idEnvio,
                                     "Mostrador",
                                     "Envío",
                                     null,
@@ -156,7 +154,7 @@ public class OrdenesPendientesActivity extends AppCompatActivity {
                                             String correo = clienteDoc.getString("correo");
 
                                             OrdenPendiente envio = new OrdenPendiente(
-                                                    idEnvio + "_env",
+                                                    idEnvio,
                                                     clienteNombre,
                                                     "Envío",
                                                     null,
@@ -175,8 +173,6 @@ public class OrdenesPendientesActivity extends AppCompatActivity {
                     }
                     adapter.notifyDataSetChanged();
                 })
-                .addOnFailureListener(e -> {
-                    Toast.makeText(this, "Error al cargar envíos.", Toast.LENGTH_SHORT).show();
-                });
+                .addOnFailureListener(e -> Toast.makeText(this, "Error al cargar envíos.", Toast.LENGTH_SHORT).show());
     }
 }
