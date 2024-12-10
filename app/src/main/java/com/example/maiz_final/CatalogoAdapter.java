@@ -77,72 +77,49 @@ public class CatalogoAdapter extends RecyclerView.Adapter<CatalogoAdapter.Catalo
             // Cargar la imagen del producto usando Glide
             Glide.with(itemView.getContext())
                     .load(producto.getImageUrl()) // URL de la imagen desde Firestore
-                    //.placeholder(R.drawable.placeholder_image) // Imagen de carga (opcional)
-                    //.error(R.drawable.error_image) // Imagen en caso de error (opcional)
                     .into(ivProducto);
 
             // Configurar acciones de los botones
             btnAdd.setOnClickListener(v -> {
                 int limite = getLimiteCantidad();
-                if (cantidadCarrito() < limite || limite == -1) {
-                    if (carrito.getOrDefault(producto, 0) < producto.getStock()) {
-                        carrito.put(producto, carrito.getOrDefault(producto, 0) + 1);
-                        producto.setStock(producto.getStock() - 1);
-                        tvCantidadProducto.setText(String.valueOf(carrito.get(producto)));
-                        tvStockProducto.setText("Stock: " + producto.getStock());
+                int cantidadSeleccionada = carrito.getOrDefault(producto, 0); // Cantidad seleccionada del producto en el carrito
+                int totalSeleccionados = cantidadCarrito(); // Cantidad total seleccionada en el carrito
 
-                        // Actualizar el stock en Firestore
-                        actualizarStockEnFirestore(producto);
-                    } else {
-                        Toast.makeText(itemView.getContext(), "Stock insuficiente.", Toast.LENGTH_SHORT).show();
-                    }
+                // Verificar el límite para Flete
+                if (tipoEntrega.equals("Flete") && totalSeleccionados >= limite) {
+                    Toast.makeText(itemView.getContext(), "Límite de 50 productos alcanzado para Flete.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                // Verificar que no exceda el stock del producto
+                if (cantidadSeleccionada < producto.getStock()) {
+                    carrito.put(producto, cantidadSeleccionada + 1);
+                    tvCantidadProducto.setText(String.valueOf(carrito.get(producto)));
+                    tvStockProducto.setText("Stock: " + (producto.getStock() - carrito.get(producto))); // Mostrar el stock restante en la interfaz
                 } else {
-                    Toast.makeText(itemView.getContext(), "Límite alcanzado para " + tipoEntrega, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(itemView.getContext(), "Stock insuficiente.", Toast.LENGTH_SHORT).show();
                 }
             });
 
             btnRemove.setOnClickListener(v -> {
-                if (carrito.containsKey(producto) && carrito.get(producto) > 0) {
-                    carrito.put(producto, carrito.get(producto) - 1);
+                int cantidadSeleccionada = carrito.getOrDefault(producto, 0);
+
+                if (cantidadSeleccionada > 0) {
+                    carrito.put(producto, cantidadSeleccionada - 1);
                     if (carrito.get(producto) == 0) {
                         carrito.remove(producto);
                     }
-                    producto.setStock(producto.getStock() + 1);
                     tvCantidadProducto.setText(String.valueOf(carrito.getOrDefault(producto, 0)));
-                    tvStockProducto.setText("Stock: " + producto.getStock());
-
-                    // Actualizar el stock en Firestore
-                    actualizarStockEnFirestore(producto);
+                    tvStockProducto.setText("Stock: " + (producto.getStock() - carrito.getOrDefault(producto, 0))); // Mostrar el stock restante en la interfaz
                 }
             });
         }
 
         private int cantidadCarrito() {
+            // Suma todas las cantidades seleccionadas en el carrito
             return carrito.values().stream().mapToInt(Integer::intValue).sum();
         }
 
-        private void actualizarStockEnFirestore(Producto producto) {
-            FirebaseFirestore db = FirebaseFirestore.getInstance();
-            db.collection("catalogo")
-                    .whereEqualTo("Nombre_producto", producto.getNombre()) // Usar el nombre del producto como identificador
-                    .get()
-                    .addOnSuccessListener(queryDocumentSnapshots -> {
-                        if (!queryDocumentSnapshots.isEmpty()) {
-                            String documentId = queryDocumentSnapshots.getDocuments().get(0).getId();
-                            db.collection("catalogo").document(documentId)
-                                    .update("Stock", producto.getStock()) // Actualizar el stock en Firestore
-                                    .addOnSuccessListener(aVoid -> {
-                                        // Éxito: Stock actualizado en Firestore
-                                    })
-                                    .addOnFailureListener(e -> {
-                                        Toast.makeText(ivProducto.getContext(), "Error al actualizar el stock.", Toast.LENGTH_SHORT).show();
-                                    });
-                        }
-                    })
-                    .addOnFailureListener(e -> {
-                        Toast.makeText(ivProducto.getContext(), "Error al acceder a Firestore.", Toast.LENGTH_SHORT).show();
-                    });
-        }
     }
 
     private int getLimiteCantidad() {
