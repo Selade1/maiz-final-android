@@ -146,6 +146,7 @@ public class SeleccionarFechaActivity extends AppCompatActivity {
                                     envio.put("nombreCliente", cliente);
                                     envio.put("fecha", fecha);
                                     envio.put("idCamion", vehiculoId);
+                                    envio.put("tipoEntrega","Flete");
 
                                     List<Map<String, Object>> productosEnvio = new ArrayList<>();
                                     for (int i = 0; i < productos.size(); i++) {
