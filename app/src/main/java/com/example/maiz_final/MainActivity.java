@@ -34,8 +34,8 @@ public class MainActivity extends AppCompatActivity {
         EditText passwordField = findViewById(R.id.passwordField);
         Button loginButton = findViewById(R.id.loginButton);
 
-        // Configurar el botón de inicio de sesión
-        loginButton.setOnClickListener(view -> {
+        // Configuración del listener para el botón de inicio de sesión
+        loginButton.setOnClickListener(v -> {
             String email = emailField.getText().toString().trim();
             String password = passwordField.getText().toString().trim();
 
@@ -55,7 +55,8 @@ public class MainActivity extends AppCompatActivity {
                             // Redirigir a la actividad Menu
                             Intent intent = new Intent(MainActivity.this, menu.class);
                             startActivity(intent);
-                            finish(); // Finaliza la actividad actual para evitar regresar al login} else {
+                            finish(); // Finaliza la actividad actual para evitar regresar al login
+                        } else {
                             // Error en el inicio de sesión
                             Toast.makeText(MainActivity.this, "Error: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                         }
