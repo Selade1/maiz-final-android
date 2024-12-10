@@ -29,6 +29,14 @@ public class CatalogoAdapter extends RecyclerView.Adapter<CatalogoAdapter.Catalo
         this.tipoEntrega = tipoEntrega;
     }
 
+    public void reiniciarCarrito() {
+        carrito.clear();
+    }
+
+    public void setTipoEntrega(String tipoEntrega) {
+        this.tipoEntrega = tipoEntrega;
+    }
+
     public HashMap<Producto, Integer> getCarrito() {
         return carrito;
     }

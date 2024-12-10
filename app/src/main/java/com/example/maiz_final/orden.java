@@ -79,17 +79,22 @@ public class orden extends AppCompatActivity {
         spinnerTipoEntrega.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                tipoEntregaSeleccionado = opciones[position];
+                String nuevoTipoEntrega = opciones[position];
+                if (!nuevoTipoEntrega.equals(tipoEntregaSeleccionado)) {
+                    tipoEntregaSeleccionado = nuevoTipoEntrega;
 
-                if (tipoEntregaSeleccionado.equals("Minorista")) {
-                    // Si el tipo de pedido es "Minorista", forzar el cliente a "Mostrador"
-                    Spinner spinnerClientes = findViewById(R.id.spinnerClientes);
-                    int posicionMostrador = clientesList.indexOf("Mostrador");
-                    if (posicionMostrador != -1) {
-                        spinnerClientes.setSelection(posicionMostrador);
-                        clienteSeleccionado = "Mostrador";
-                        Toast.makeText(orden.this, "Cliente configurado automáticamente a 'Mostrador'", Toast.LENGTH_SHORT).show();
+                    if (tipoEntregaSeleccionado.equals("Selecciona tipo de pedido")) {
+                        return;
                     }
+
+                    // Reiniciar el carrito
+                    catalogoAdapter.reiniciarCarrito();
+
+                    // Actualizar el adaptador con el nuevo tipo de entrega
+                    catalogoAdapter.setTipoEntrega(tipoEntregaSeleccionado);
+                    catalogoAdapter.notifyDataSetChanged();
+
+                    Toast.makeText(orden.this, "Tipo de pedido cambiado a " + tipoEntregaSeleccionado + ". Carrito reiniciado.", Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -102,7 +107,6 @@ public class orden extends AppCompatActivity {
         // Seleccionar el valor por defecto
         spinnerTipoEntrega.setSelection(0);
     }
-
 
 
     private void configurarSpinnerClientes() {
@@ -151,8 +155,6 @@ public class orden extends AppCompatActivity {
         spinnerClientes.setSelection(0);
     }
 
-
-
     private void cargarCatalogo() {
         db.collection("catalogo").get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
@@ -173,8 +175,6 @@ public class orden extends AppCompatActivity {
                     Toast.makeText(orden.this, "Error al cargar el catálogo.", Toast.LENGTH_SHORT).show();
                 });
     }
-
-
 
     private void realizarPedido() {
         if (clienteSeleccionado == null || clienteSeleccionado.equals("Selecciona un cliente")) {
